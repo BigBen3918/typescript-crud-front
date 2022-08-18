@@ -61,7 +61,7 @@ export default function TodoCreateModal(props: any) {
         setShow(false);
         init();
         loadData();
-        navigate("/todo");
+        navigate("/");
     };
 
     const init = () => {

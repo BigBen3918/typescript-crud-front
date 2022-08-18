@@ -22,11 +22,8 @@ export default function App() {
         <Provider>
             <Router>
                 <Routes>
-                    {/* Redirect Route */}
-                    <Route path="/" element={<Navigate to="/todo" />} />
-
                     {/* Main Routes */}
-                    <Route path="/todo" element={<Todo />} />
+                    <Route path="/" element={<Todo />} />
                     <Route path="/tasklist/:name" element={<TaskList />} />
                 </Routes>
 

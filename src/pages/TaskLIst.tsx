@@ -26,7 +26,7 @@ export default function TaskList() {
     }, [currentItems]);
 
     const HandleBack = () => {
-        navigate("/todo");
+        navigate("/");
     };
 
     const HandleEvent = async (param: string, flag: Number) => {
@@ -59,7 +59,7 @@ export default function TaskList() {
             else Toast(result.message, "error");
 
             loadData();
-            navigate("/todo");
+            navigate("/");
         }
     };
 
@@ -91,7 +91,7 @@ export default function TaskList() {
 
         setEditIndex("");
         loadData();
-        navigate("/todo");
+        navigate("/");
     };
 
     return (
