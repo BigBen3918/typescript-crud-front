@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGlobalContext } from "../context";
 import { Toast } from "../utils/message";
+import Action from "../services";
 import TodoCreateModal from "../components/TodoCreateModal";
 
 export default function TaskList() {
     const { name } = useParams();
     const navigate = useNavigate();
-    const [state, {}]: any = useGlobalContext();
+    const [state, { loadData }]: any = useGlobalContext();
     const [openModal, setOpenModal] = useState(false);
     const [currentItems, setCurrentItems]: any = useState(null);
     const [editIndex, setEditIndex] = useState("");
@@ -28,7 +29,7 @@ export default function TaskList() {
         navigate("/todo");
     };
 
-    const HandleEvent = (param: string, flag: Number) => {
+    const HandleEvent = async (param: string, flag: Number) => {
         if (flag === 1) {
             setEditIndex(param);
             state.todoData.filter((item: any) => {
@@ -49,27 +50,20 @@ export default function TaskList() {
                 }
             });
         } else {
-            state.todoData.filter((item: any) => {
-                if (item.name === name) {
-                    let index: any = -1;
-                    item.items.filter(function (
-                        value: any,
-                        idx: any,
-                        arr: any
-                    ) {
-                        if (value.itemname === param) index = idx;
-                    });
-
-                    item.items.splice(index, 1);
-                }
+            const result = await Action.Remove__Task({
+                name: name,
+                itemname: param,
             });
 
-            Toast("Successfully delete", "success");
+            if (result.success) Toast("Successfully Create", "success");
+            else Toast(result.message, "error");
+
+            loadData();
             navigate("/todo");
         }
     };
 
-    const HandleUpdate = (index: any) => {
+    const HandleUpdate = async (index: any) => {
         if (editName.trim() === "") {
             Toast("Please enter Task name", "warning");
             return;
@@ -83,17 +77,21 @@ export default function TaskList() {
             return;
         }
 
-        state.todoData.filter((item: any) => {
-            if (item.name === name) {
-                item.items[index].itemname = editName;
-                item.items[index].description = editDesc;
-                item.items[index].endTime = editEndTime;
-                item.items[index].priority = editPriority;
-            }
+        const result = await Action.Update__Task({
+            index: index,
+            name: name,
+            editName: editName,
+            editDesc: editDesc,
+            editEndTime: editEndTime,
+            editPriority: editPriority,
         });
 
-        Toast("Successfully update", "success");
+        if (result.success) Toast("Successfully Create", "success");
+        else Toast(result.message, "error");
+
         setEditIndex("");
+        loadData();
+        navigate("/todo");
     };
 
     return (

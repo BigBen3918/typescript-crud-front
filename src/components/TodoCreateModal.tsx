@@ -1,10 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useGlobalContext } from "../context";
 import { Toast } from "../utils/message";
+import Action from "../services";
 
 export default function TodoCreateModal(props: any) {
+    const navigate = useNavigate();
     const { show, setShow, flag, param } = props;
-    const [state, { dispatch }]: any = useGlobalContext();
+    const [state, { loadData }]: any = useGlobalContext();
     // Todo Variables
     const [todoName, setTodoName] = useState("");
     // Tasklist Variables
@@ -12,30 +15,26 @@ export default function TodoCreateModal(props: any) {
     const [description, setDescription] = useState("");
     const [endTime, setEndTime] = useState(Date);
     const [priority, setPrioirity] = useState(1);
+    const [loading, setLoading] = useState(false);
 
-    const HandleTodoCreate = () => {
+    const HandleTodoCreate = async () => {
         if (todoName.trim() === "") {
             Toast("Please enter Todo name", "warning");
             return;
         }
-        let isValidation = state.todoData.filter((item: any) => {
-            return item.name == todoName.trim();
-        });
-        if (isValidation.length > 0) {
-            Toast("Todo name already exist", "error");
-            return;
-        }
+        setLoading(true);
+        const result = await Action.Create__Todo(todoName);
 
-        dispatch({
-            type: "todoData",
-            payload: [...state.todoData, { name: todoName, items: [] }],
-        });
+        if (result.success) Toast("Successfully Create", "success");
+        else Toast(result.message, "error");
 
+        setLoading(false);
         setShow(false);
+        loadData();
         init();
     };
 
-    const HandleTaskListCreate = () => {
+    const HandleTaskListCreate = async () => {
         if (taskName.trim() === "") {
             Toast("Please enter Task name", "warning");
             return;
@@ -48,19 +47,21 @@ export default function TodoCreateModal(props: any) {
             Toast("Please enter endtime", "warning");
             return;
         }
-        state.todoData.filter((item: any) => {
-            if (item.name === param) {
-                return item.items.push({
-                    itemname: taskName,
-                    description: description,
-                    endTime: endTime.toString(),
-                    priority: priority,
-                });
-            }
+        const result = await Action.Create__Task({
+            name: param,
+            itemname: taskName,
+            description: description,
+            endTime: endTime.toString(),
+            priority: priority,
         });
+
+        if (result.success) Toast("Successfully Create", "success");
+        else Toast(result.message, "error");
 
         setShow(false);
         init();
+        loadData();
+        navigate("/todo");
     };
 
     const init = () => {
@@ -102,12 +103,18 @@ export default function TodoCreateModal(props: any) {
                                     />
                                 </span>
                                 <div className="spacer-half"></div>
-                                <button
-                                    className="btn-primary"
-                                    onClick={HandleTodoCreate}
-                                >
-                                    Submit
-                                </button>
+                                {loading ? (
+                                    <button className="btn-primary">
+                                        Subitting...
+                                    </button>
+                                ) : (
+                                    <button
+                                        className="btn-primary"
+                                        onClick={HandleTodoCreate}
+                                    >
+                                        Submit
+                                    </button>
+                                )}
                             </main>
                         </div>
                     </>

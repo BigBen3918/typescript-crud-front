@@ -3,13 +3,14 @@ import { useGlobalContext } from "../context";
 import { useNavigate } from "react-router-dom";
 import TodoCreateModal from "../components/TodoCreateModal";
 import { Toast } from "../utils/message";
+import Action from "../services";
 
 export default function Todo() {
     const navigate = useNavigate();
-    const [state, { dispatch }]: any = useGlobalContext();
+    const [state, { loadData }]: any = useGlobalContext();
     const [openModal, setOpenModal] = useState(false);
 
-    const HandleEvent = (e: any, name: string) => {
+    const HandleEvent = async (e: any, name: string) => {
         let delButton = document.getElementById(name);
 
         if (delButton) {
@@ -18,15 +19,10 @@ export default function Todo() {
 
         if (!isClickButton) navigate(`/tasklist/${name}`);
         else {
-            let filterData = state.todoData.filter(
-                (item: any) => item.name !== name
-            );
-
-            dispatch({
-                type: "todoData",
-                payload: filterData,
-            });
-            Toast("Successfully delete", "success");
+            const reuslt: any = await Action.Remove__Todo(name);
+            if (reuslt.success) Toast("Successfully delete", "success");
+            else Toast(reuslt.message, "error");
+            loadData();
         }
     };
 
