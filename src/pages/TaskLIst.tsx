@@ -65,6 +65,7 @@ export default function TaskList() {
             });
 
             Toast("Successfully delete", "success");
+            navigate("/todo");
         }
     };
 
