@@ -55,7 +55,7 @@ export default function TaskList() {
                 itemname: param,
             });
 
-            if (result.success) Toast("Successfully Create", "success");
+            if (result.success) Toast("Successfully Delete", "success");
             else Toast(result.message, "error");
 
             loadData();
@@ -86,7 +86,7 @@ export default function TaskList() {
             editPriority: editPriority,
         });
 
-        if (result.success) Toast("Successfully Create", "success");
+        if (result.success) Toast("Successfully Update", "success");
         else Toast(result.message, "error");
 
         setEditIndex("");
