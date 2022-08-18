@@ -12,7 +12,6 @@ export default function TaskList() {
     const [openModal, setOpenModal] = useState(false);
     const [currentItems, setCurrentItems]: any = useState(null);
     const [editIndex, setEditIndex] = useState("");
-    const [editName, setEditName] = useState("");
     const [editDesc, setEditDesc] = useState("");
     const [editEndTime, setEditEndTime] = useState("");
     const [editPriority, setEditPriority] = useState(0);
@@ -26,7 +25,7 @@ export default function TaskList() {
     }, [currentItems]);
 
     const HandleBack = () => {
-        navigate("/");
+        navigate("/todo");
     };
 
     const HandleEvent = async (param: string, flag: Number) => {
@@ -40,10 +39,9 @@ export default function TaskList() {
                         idx: any,
                         arr: any
                     ) {
-                        if (value.itemname === param) index = idx;
+                        if (value.description === param) index = idx;
                     });
 
-                    setEditName(item.items[index].itemname);
                     setEditDesc(item.items[index].description);
                     setEditEndTime(item.items[index].endTime);
                     setEditPriority(item.items[index].priority);
@@ -52,22 +50,18 @@ export default function TaskList() {
         } else {
             const result = await Action.Remove__Task({
                 name: name,
-                itemname: param,
+                description: param,
             });
 
             if (result.success) Toast("Successfully Delete", "success");
             else Toast(result.message, "error");
 
             loadData();
-            navigate("/");
+            navigate("/todo");
         }
     };
 
     const HandleUpdate = async (index: any) => {
-        if (editName.trim() === "") {
-            Toast("Please enter Task name", "warning");
-            return;
-        }
         if (editDesc.trim() === "") {
             Toast("Please enter description", "warning");
             return;
@@ -80,7 +74,6 @@ export default function TaskList() {
         const result = await Action.Update__Task({
             index: index,
             name: name,
-            editName: editName,
             editDesc: editDesc,
             editEndTime: editEndTime,
             editPriority: editPriority,
@@ -91,7 +84,20 @@ export default function TaskList() {
 
         setEditIndex("");
         loadData();
-        navigate("/");
+        navigate("/todo");
+    };
+
+    const HandleComplete = async (index: any) => {
+        const result: any = await Action.Complete_Task({
+            name: name,
+            index: index,
+        });
+
+        if (result.success) Toast("Successfully Complete", "success");
+        else Toast(result.message, "error");
+
+        loadData();
+        navigate("/todo");
     };
 
     return (
@@ -111,36 +117,26 @@ export default function TaskList() {
                         <thead>
                             <tr>
                                 <th>No</th>
-                                <th>Name</th>
                                 <th>Description</th>
                                 <th>End Time</th>
                                 <th>Priority</th>
+                                <th>Completed</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {currentItems
                                 ? currentItems.map((item: any, index: any) => (
-                                      <tr key={index}>
+                                      <tr
+                                          key={index}
+                                          className={
+                                              item.status ? "task__strike" : ""
+                                          }
+                                      >
                                           <td>{index + 1}</td>
                                           <td>
-                                              {editIndex !== item.itemname ? (
-                                                  item.itemname
-                                              ) : (
-                                                  <input
-                                                      type="text"
-                                                      className="form-control"
-                                                      onChange={(e: any) =>
-                                                          setEditName(
-                                                              e.target.value
-                                                          )
-                                                      }
-                                                      value={editName}
-                                                  />
-                                              )}
-                                          </td>
-                                          <td>
-                                              {editIndex !== item.itemname ? (
+                                              {editIndex !==
+                                              item.description ? (
                                                   item.description
                                               ) : (
                                                   <input
@@ -156,7 +152,8 @@ export default function TaskList() {
                                               )}
                                           </td>
                                           <td>
-                                              {editIndex !== item.itemname ? (
+                                              {editIndex !==
+                                              item.description ? (
                                                   item.endTime
                                               ) : (
                                                   <input
@@ -172,7 +169,8 @@ export default function TaskList() {
                                               )}
                                           </td>
                                           <td>
-                                              {editIndex !== item.itemname ? (
+                                              {editIndex !==
+                                              item.description ? (
                                                   item.priority == 1 ? (
                                                       "Low"
                                                   ) : item.priority == 2 ? (
@@ -205,22 +203,35 @@ export default function TaskList() {
                                               )}
                                           </td>
                                           <td>
-                                              {editIndex !== item.itemname ? (
+                                              <input
+                                                  type="checkbox"
+                                                  defaultChecked={item.status}
+                                                  disabled={item.status && true}
+                                                  onClick={() =>
+                                                      HandleComplete(index)
+                                                  }
+                                              />
+                                          </td>
+                                          <td>
+                                              {editIndex !==
+                                              item.description ? (
                                                   <>
+                                                      {!item.status && (
+                                                          <button
+                                                              onClick={() =>
+                                                                  HandleEvent(
+                                                                      item.description,
+                                                                      1
+                                                                  )
+                                                              }
+                                                          >
+                                                              Edit
+                                                          </button>
+                                                      )}
                                                       <button
                                                           onClick={() =>
                                                               HandleEvent(
-                                                                  item.itemname,
-                                                                  1
-                                                              )
-                                                          }
-                                                      >
-                                                          Edit
-                                                      </button>
-                                                      <button
-                                                          onClick={() =>
-                                                              HandleEvent(
-                                                                  item.itemname,
+                                                                  item.description,
                                                                   2
                                                               )
                                                           }

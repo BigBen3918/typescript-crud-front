@@ -84,10 +84,37 @@
     }
 }
 
+.todo__strike {
+    position: relative;
+
+    ::after {
+        position: absolute;
+        top: 50%;
+        left: 3%;
+        content: "";
+        width: 75%;
+        border: 1px solid rgba(255, 0, 0, 0.137);
+    }
+}
+
+.task__strike {
+    position: relative;
+
+    ::after {
+        position: absolute;
+        top: 50%;
+        left: 3%;
+        content: "";
+        width: 63%;
+        border: 1px solid rgba(255, 0, 0, 0.137);
+    }
+}
+
 // TodoPage Style
 .todo {
     .todo__table {
         background-color: var(--secondary);
+        min-width: 685px;
         padding: 10px;
         border-radius: 5px;
 

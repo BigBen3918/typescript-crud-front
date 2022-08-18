@@ -166,6 +166,35 @@ const Remove__Task = async (param: any) => {
     }
 };
 
+const Complete_Task = async (param: any) => {
+    try {
+        let content: any = APISchema(param);
+
+        let request: any = await fetch(
+            process.env.REACT_APP_BACKENDURL + "/api/complete-task",
+            content
+        );
+
+        if (request.status === 200) {
+            return {
+                success: true,
+            };
+        } else {
+            let message = await request.text();
+            return {
+                success: false,
+                message: message,
+            };
+        }
+    } catch (err: any) {
+        console.log(err.message);
+        return {
+            success: false,
+            message: "Community Error",
+        };
+    }
+};
+
 // Export Functions
 const Action = {
     Create__Todo,
@@ -174,6 +203,7 @@ const Action = {
     Update__Task,
     Remove__Task,
     Load__Data,
+    Complete_Task,
 };
 
 export default Action;

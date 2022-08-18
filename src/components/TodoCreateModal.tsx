@@ -11,7 +11,6 @@ export default function TodoCreateModal(props: any) {
     // Todo Variables
     const [todoName, setTodoName] = useState("");
     // Tasklist Variables
-    const [taskName, setTaskName] = useState("");
     const [description, setDescription] = useState("");
     const [endTime, setEndTime] = useState(Date);
     const [priority, setPrioirity] = useState(1);
@@ -25,20 +24,18 @@ export default function TodoCreateModal(props: any) {
         setLoading(true);
         const result = await Action.Create__Todo(todoName);
 
-        if (result.success) Toast("Successfully Create", "success");
-        else Toast(result.message, "error");
-
-        setLoading(false);
-        setShow(false);
-        loadData();
-        init();
+        if (result.success) {
+            Toast("Successfully Create", "success");
+            setLoading(false);
+            setShow(false);
+            loadData();
+            init();
+        } else {
+            Toast(result.message, "error");
+        }
     };
 
     const HandleTaskListCreate = async () => {
-        if (taskName.trim() === "") {
-            Toast("Please enter Task name", "warning");
-            return;
-        }
         if (description.trim() === "") {
             Toast("Please enter description", "warning");
             return;
@@ -49,24 +46,24 @@ export default function TodoCreateModal(props: any) {
         }
         const result = await Action.Create__Task({
             name: param,
-            itemname: taskName,
             description: description,
             endTime: endTime.toString(),
             priority: priority,
         });
 
-        if (result.success) Toast("Successfully Create", "success");
-        else Toast(result.message, "error");
-
-        setShow(false);
-        init();
-        loadData();
-        navigate("/");
+        if (result.success) {
+            Toast("Successfully Create", "success");
+            setShow(false);
+            loadData();
+            init();
+            navigate("/todo");
+        } else {
+            Toast(result.message, "error");
+        }
     };
 
     const init = () => {
         setTodoName("");
-        setTaskName("");
         setDescription("");
         setEndTime(Date);
         setPrioirity(1);
@@ -134,21 +131,9 @@ export default function TodoCreateModal(props: any) {
 
                             <main className="modal__main">
                                 <span>
-                                    <label htmlFor="name">Name: </label>
+                                    <label htmlFor="desc">Description: </label>
                                     <input
                                         type="text"
-                                        id="name"
-                                        className="form-control"
-                                        onChange={(e: any) =>
-                                            setTaskName(e.target.value)
-                                        }
-                                        value={taskName}
-                                    />
-                                </span>
-                                <div className="spacer-half"></div>
-                                <span>
-                                    <label htmlFor="desc">Description: </label>
-                                    <textarea
                                         id="desc"
                                         className="form-control"
                                         onChange={(e: any) =>

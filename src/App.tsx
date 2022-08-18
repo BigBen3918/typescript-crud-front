@@ -22,8 +22,10 @@ export default function App() {
         <Provider>
             <Router>
                 <Routes>
+                    <Route path="/" element={<Navigate to="/todo" />} />
+
                     {/* Main Routes */}
-                    <Route path="/" element={<Todo />} />
+                    <Route path="/todo" element={<Todo />} />
                     <Route path="/tasklist/:name" element={<TaskList />} />
                 </Routes>
 

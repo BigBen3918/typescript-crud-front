@@ -42,8 +42,7 @@ export default function Todo() {
                             <tr>
                                 <th>No</th>
                                 <th>Name</th>
-                                <th>All Items</th>
-                                <th>UnComplete</th>
+                                <th>Completion</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -52,11 +51,26 @@ export default function Todo() {
                                 <tr
                                     onClick={(e) => HandleEvent(e, item.name)}
                                     key={index}
+                                    className={
+                                        item.items.length ===
+                                        item.items.filter(
+                                            (item: any) => item.status === true
+                                        ).length
+                                            ? "todo__strike"
+                                            : ""
+                                    }
                                 >
                                     <td>{index + 1}</td>
                                     <td>{item.name}</td>
-                                    <td>{item.items.length}</td>
-                                    <td>{item.items.length}</td>
+                                    <td>
+                                        {
+                                            item.items.filter(
+                                                (item: any) =>
+                                                    item.status === true
+                                            ).length
+                                        }{" "}
+                                        / {item.items.length}
+                                    </td>
                                     <td>
                                         <button id={item.name}>Delete</button>
                                     </td>
